@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Kitchen Handbook — Coding Basics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF5EA;
+    --bg-card:#F1E8D6;
+    --bg-card-2:#EAE0C8;
+    --ink:#2B2622;
+    --ink-soft:#6B6258;
+    --teal:#1F5C52;
+    --teal-deep:#133D36;
+    --teal-tint:#E2EEEA;
+    --amber:#C98A3D;
+    --amber-tint:#F6E8D2;
+    --coral:#C2502B;
+    --coral-tint:#F5E0D6;
+    --line:#DCD0B8;
+    --radius:14px;
+    --font-display:'Fraunces',serif;
+    --font-body:'Public Sans',sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.65;
+  }
+  ::selection{ background:var(--teal); color:#fff; }
+  button{ font-family:inherit; }
+  button:focus-visible, input:focus-visible, .card:focus-visible{
+    outline:2px solid var(--teal-deep); outline-offset:2px;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{ padding:64px 24px 36px; text-align:center; border-bottom:1px dashed var(--line); }
+  .eyebrow{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--teal-deep); background:var(--teal-tint); padding:5px 12px; border-radius:999px;
+    display:inline-block; margin-bottom:18px;
+  }
+  .hero h1{ font-family:var(--font-display); font-weight:600; font-size:clamp(32px,5vw,54px); margin:0 0 14px; letter-spacing:-0.01em;}
+  .hero p{ max-width:560px; margin:0 auto; color:var(--ink-soft); font-size:17px; }
+
+  /* ---------- layout ---------- */
+  .app{ display:grid; grid-template-columns:240px 1fr; gap:28px; max-width:1140px; margin:0 auto; padding:36px 24px 90px; align-items:start; }
+  @media (max-width:840px){
+    .app{ grid-template-columns:1fr; }
+    .rail{ position:static; flex-direction:row; overflow-x:auto; padding-bottom:10px; gap:8px; -webkit-overflow-scrolling:touch; }
+    .rail button.station{ flex:0 0 auto; white-space:nowrap; }
+  }
+
+  .rail{ position:sticky; top:20px; display:flex; flex-direction:column; gap:4px; }
+  .rail button.station{
+    text-align:left; background:none; border:1px solid transparent; border-radius:10px;
+    padding:9px 10px; cursor:pointer; font-size:13.5px; color:var(--ink-soft);
+    display:flex; align-items:center; gap:10px; transition:background .15s,color .15s;
+  }
+  .rail button.station:hover{ background:var(--bg-card-2); }
+  .rail .num{
+    font-family:var(--font-mono); font-size:11px; width:21px; height:21px; border-radius:50%;
+    border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; color:var(--ink-soft); background:var(--bg);
+  }
+  .rail button.station.active{ background:var(--bg-card); color:var(--ink); font-weight:600; }
+  .rail button.station.active .num{ background:var(--teal); border-color:var(--teal); color:#fff; }
+  .rail button.station.done:not(.active) .num{ background:var(--amber); border-color:var(--amber); color:#fff; }
+
+  /* ---------- panel (the "ticket") ---------- */
+  .panel{
+    background:var(--bg-card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:34px 36px; position:relative; display:none;
+  }
+  .panel.active{ display:block; animation:fade .35s ease; }
+  @keyframes fade{ from{ opacity:0; transform:translateY(4px);} to{ opacity:1; transform:translateY(0);} }
+  .panel::before{
+    content:""; position:absolute; top:-1px; left:28px; right:28px; height:9px;
+    background-image:radial-gradient(circle at 8px 4px, var(--bg) 4.5px, transparent 5px);
+    background-size:18px 9px; background-repeat:repeat-x;
+  }
+  .station-tag{
+    font-family:var(--font-mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--teal-deep); display:block; margin-bottom:10px;
+  }
+  .panel h2{ font-family:var(--font-display); font-size:30px; font-weight:600; margin:0 0 14px; }
+  .panel p{ margin:0 0 14px; font-size:15.5px; }
+  .analogy{
+    background:var(--teal-tint); border-left:3px solid var(--teal); padding:13px 16px;
+    border-radius:0 9px 9px 0; font-size:14.5px; margin:18px 0; color:var(--teal-deep);
+  }
+  .analogy b{ color:var(--teal-deep); }
+
+  /* ---------- demo blocks ---------- */
+  .demo{ background:var(--bg); border:1px solid var(--line); border-radius:11px; padding:20px; margin-top:20px; }
+  .demo h3{
+    font-family:var(--font-mono); font-size:12px; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--ink-soft); margin:0 0 14px;
+  }
+  .hint{ font-size:13px; color:var(--ink-soft); margin-top:10px; }
+
+  .btn{
+    font-weight:600; font-size:13.5px; padding:9px 16px; border-radius:8px; border:1px solid var(--teal);
+    background:var(--teal); color:#fff; cursor:pointer; transition:transform .08s, opacity .15s;
+  }
+  .btn:hover{ opacity:.92; }
+  .btn:active{ transform:translateY(1px); }
+  .btn.secondary{ background:transparent; color:var(--teal-deep); }
+  .btn.amber{ background:var(--amber); border-color:var(--amber); }
+  .btn:disabled{ opacity:.45; cursor:not-allowed; }
+  .row-gap{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+
+  pre{
+    background:#1E1B17; color:#E9E2D3; font-family:var(--font-mono); font-size:13px;
+    border-radius:9px; padding:14px 16px; overflow-x:auto; margin:0; line-height:1.55;
+  }
+  code{ font-family:var(--font-mono); }
+
+  /* terminal */
+  .term{ background:#1E1B17; border-radius:10px; padding:14px 16px; font-family:var(--font-mono); font-size:13px; color:#E9E2D3; min-height:150px; }
+  .term .line{ white-space:pre-wrap; margin:0 0 4px; }
+  .term .prompt-color{ color:#7FBE9E; }
+  .term .row{ display:flex; gap:6px; align-items:center; margin-top:6px; }
+  .term input{ background:none; border:none; color:#E9E2D3; font-family:var(--font-mono); font-size:13px; outline:none; flex:1; }
+
+  /* node runner */
+  textarea.codebox{
+    width:100%; min-height:110px; font-family:var(--font-mono); font-size:13px; background:#1E1B17; color:#E9E2D3;
+    border:none; border-radius:9px; padding:14px 16px; resize:vertical;
+  }
+  .receipt{ margin-top:12px; background:#fff; border:1px dashed var(--line); border-radius:6px; padding:12px 14px; font-family:var(--font-mono); font-size:13px; color:var(--ink); white-space:pre-wrap; }
+  .receipt.error{ color:var(--coral); border-color:var(--coral); }
+
+  /* npm pantry */
+  .pantry{ display:flex; flex-wrap:wrap; gap:10px; min-height:46px; margin-top:14px; }
+  .crate{
+    background:var(--amber-tint); border:1px solid var(--amber); color:var(--teal-deep); font-family:var(--font-mono);
+    font-size:12px; padding:8px 12px; border-radius:7px; animation:drop .4s ease;
+  }
+  @keyframes drop{ from{ opacity:0; transform:translateY(-10px);} to{ opacity:1; transform:translateY(0);} }
+
+  /* server */
+  .status-dot{ width:9px; height:9px; border-radius:50%; background:var(--line); display:inline-block; margin-right:7px; }
+  .status-dot.on{ background:var(--teal); }
+  .server-log{ background:#1E1B17; color:#E9E2D3; font-family:var(--font-mono); font-size:12.5px; border-radius:9px; padding:12px 14px; margin-top:12px; min-height:90px; }
+  .server-log div{ margin-bottom:3px; }
+
+  /* api menu */
+  .menu-list{ display:flex; flex-direction:column; gap:8px; margin-top:8px; }
+  .menu-item{
+    text-align:left; background:#fff; border:1px solid var(--line); border-radius:8px; padding:10px 14px;
+    cursor:pointer; font-size:13.5px; display:flex; justify-content:space-between; gap:10px;
+  }
+  .menu-item:hover{ border-color:var(--teal); }
+  .menu-item .verb{ font-family:var(--font-mono); font-size:11px; color:var(--teal-deep); background:var(--teal-tint); padding:2px 7px; border-radius:5px; }
+
+  /* endpoint table */
+  table.ep{ width:100%; border-collapse:collapse; margin-top:6px; font-size:13.5px; }
+  table.ep th, table.ep td{ text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); }
+  table.ep th{ font-family:var(--font-mono); font-size:11px; text-transform:uppercase; color:var(--ink-soft); }
+  table.ep tr:hover td{ background:var(--bg-card-2); }
+  table.ep td code{ font-size:12.5px; }
+
+  /* webhook compare */
+  .compare{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:560px){ .compare{ grid-template-columns:1fr; } }
+  .compare .col{ background:#fff; border:1px solid var(--line); border-radius:9px; padding:14px; }
+  .compare h4{ margin:0 0 8px; font-family:var(--font-mono); font-size:12px; text-transform:uppercase; color:var(--ink-soft); }
+  .feed{ font-family:var(--font-mono); font-size:12px; min-height:70px; margin-top:10px; color:var(--ink-soft); }
+  .feed div{ margin-bottom:4px; }
+  .feed .hit{ color:var(--teal-deep); font-weight:600; }
+
+  /* json builder */
+  .field-row{ display:flex; gap:8px; margin-bottom:8px; }
+  .field-row input{
+    flex:1; font-family:var(--font-mono); font-size:13px; padding:7px 10px; border:1px solid var(--line);
+    border-radius:6px; background:#fff; color:var(--ink);
+  }
+  .field-row button{ background:var(--coral-tint); color:var(--coral); border:1px solid var(--coral); border-radius:6px; padding:0 10px; cursor:pointer; font-size:13px; }
+
+  /* env var toggle */
+  .toggle-pair{ display:flex; gap:8px; margin-bottom:12px; }
+  .toggle-pair button{
+    flex:1; padding:9px 12px; border-radius:8px; border:1px solid var(--line); background:#fff; cursor:pointer; font-size:13px; font-weight:600; color:var(--ink-soft);
+  }
+  .toggle-pair button.active.risky{ background:var(--coral-tint); border-color:var(--coral); color:var(--coral); }
+  .toggle-pair button.active.safe{ background:var(--teal-tint); border-color:var(--teal); color:var(--teal-deep); }
+
+  /* flashcards */
+  .cards-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; margin-top:18px; }
+  .card{ perspective:900px; height:118px; cursor:pointer; }
+  .card-inner{ position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .card.flipped .card-inner{ transform:rotateY(180deg); }
+  .card-face{
+    position:absolute; inset:0; backface-visibility:hidden; border-radius:10px; padding:12px;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+  }
+  .card-front{ background:var(--bg-card-2); border:1px solid var(--line); font-family:var(--font-display); font-weight:600; font-size:16px; }
+  .card-back{ background:var(--teal); color:#fff; transform:rotateY(180deg); font-size:12px; line-height:1.45; }
+
+  @media (prefers-reduced-motion:reduce){
+    *{ animation-duration:.001s !important; transition-duration:.001s !important; scroll-behavior:auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <span class="eyebrow">order up — coding basics</span>
+  <h1>The kitchen handbook</h1>
+  <p>Every backend concept you'll touch this week, explained the way a busy kitchen actually runs. Work through the stations in order, or jump straight to whatever you're stuck on — every station has something to click, not just read.</p>
+</div>
+
+<div class="app">
+  <nav class="rail" id="rail"></nav>
+  <main id="panels"></main>
+</div>
+
+<script>
+/* ---------------- station data ---------------- */
+const stations = [
+  { id:'welcome', label:'Start here' },
+  { id:'terminal', label:'The terminal' },
+  { id:'nodejs', label:'Node.js' },
+  { id:'npm', label:'npm' },
+  { id:'server', label:'A server' },
+  { id:'api', label:'An API' },
+  { id:'endpoint', label:'An endpoint' },
+  { id:'webhook', label:'A webhook' },
+  { id:'json', label:'JSON' },
+  { id:'envvar', label:'Environment variables' },
+  { id:'recap', label:'Recap & test yourself' },
+];
+
+const rail = document.getElementById('rail');
+const panels = document.getElementById('panels');
+const visited = new Set();
+
+stations.forEach((s, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'station';
+  btn.dataset.id = s.id;
+  btn.innerHTML = '<span class="num">' + (i+1) + '</span><span>' + s.label + '</span>';
+  btn.addEventListener('click', () => showStation(s.id));
+  rail.appendChild(btn);
+});
+
+function showStation(id){
+  visited.add(id);
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + id));
+  document.querySelectorAll('.rail .station').forEach(b => {
+    b.classList.toggle('active', b.dataset.id === id);
+    b.classList.toggle('done', visited.has(b.dataset.id) && b.dataset.id !== id);
+  });
+  window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+}
+
+function addPanel(id, html){
+  const div = document.createElement('div');
+  div.className = 'panel';
+  div.id = 'panel-' + id;
+  div.innerHTML = html;
+  panels.appendChild(div);
+}
+
+/* ---------------- 1. welcome ---------------- */
+addPanel('welcome', `
+  <span class="station-tag">Station 1 · Orientation</span>
+  <h2>Welcome to the kitchen</h2>
+  <p>Every backend concept you're about to learn already has a real job in a restaurant. Once you recognize the job, the code stops being mysterious — it's just the same logic, typed instead of spoken.</p>
+  <p>A <b>server</b> is the waiter who waits for someone to need something. An <b>API</b> is the menu — the agreed way to ask for things. A <b>webhook</b> is the kitchen calling you when your order's ready, instead of you walking up every two minutes. <b>JSON</b> is the order ticket. An <b>environment variable</b> is the safe combination, kept off the paper. <b>npm</b> is the supplier truck. <b>Node.js</b> is the engine that lets your waiter actually move.</p>
+  <div class="analogy"><b>How to use this page:</b> work left to right through the stations — each one has something to click, not just read. Nothing here saves between visits, so feel free to break things.</div>
+`);
+
+/* ---------------- 2. terminal ---------------- */
+addPanel('terminal', `
+  <span class="station-tag">Station 2 · Tools</span>
+  <h2>The terminal</h2>
+  <p>Normally you control a computer by clicking — that's like walking in through the front door every time. The terminal is a direct intercom line to the kitchen: you type exactly what you want, hit enter, and it happens immediately.</p>
+  <div class="demo">
+    <h3>Try it — type a command below</h3>
+    <div class="term" id="termOutput">
+      <div class="line">Try: <span class="prompt-color">node -v</span>, <span class="prompt-color">npm -v</span>, <span class="prompt-color">mkdir my-project</span>, <span class="prompt-color">cd my-project</span>, <span class="prompt-color">code .</span>, or <span class="prompt-color">help</span></div>
+    </div>
+    <div class="row">
+      <span class="prompt-color">$</span>
+      <input id="termInput" type="text" placeholder="type a command and press enter" autocomplete="off">
+    </div>
+  </div>
+`);
+
+/* ---------------- 3. node.js ---------------- */
+addPanel('nodejs', `
+  <span class="station-tag">Station 3 · Tools</span>
+  <h2>Node.js</h2>
+  <p>JavaScript was built to live inside a browser — an actor that can only perform on one stage. Node.js lets that same language step off the stage and run anywhere, directly on your computer. It's the engine that takes the code you write and actually runs it.</p>
+  <div class="demo">
+    <h3>Try it — edit the code, then run it for real</h3>
+    <textarea class="codebox" id="codeInput">let dish = "margherita pizza";
+
+function order(item) {
+  return "Order up: " + item;
+}
+
+console.log(order(dish));</textarea>
+    <div class="row-gap" style="margin-top:10px;">
+      <button class="btn" onclick="runCode()">Run with Node</button>
+    </div>
+    <div class="receipt" id="codeOutput">Output will print here, like a receipt.</div>
+  </div>
+`);
+
+/* ---------------- 4. npm ---------------- */
+addPanel('npm', `
+  <span class="station-tag">Station 4 · Tools</span>
+  <h2>npm</h2>
+  <p>You don't make ketchup from raw tomatoes every single day — you order pre-made ketchup from a supplier and spend your energy on the dish itself. npm is that supplier truck: it downloads other people's pre-written code so you're not building everything from scratch.</p>
+  <div class="demo">
+    <h3>Try it — install a package</h3>
+    <div class="row-gap">
+      <button class="btn amber" id="npmBtn" onclick="installPackage()">npm install express</button>
+    </div>
+    <div class="pantry" id="pantry"></div>
+    <div class="hint" id="npmHint">Nothing installed yet.</div>
+  </div>
+`);
+
+/* ---------------- 5. server ---------------- */
+addPanel('server', `
+  <span class="station-tag">Station 5 · The core idea</span>
+  <h2>A server</h2>
+  <p>A server is just a program that waits. It does nothing until someone sends it a message — then it reacts. That's your whole "backend": a small program sitting there, listening, ready for Airtable to say something's off.</p>
+  <div class="demo">
+    <h3>Try it — start the waiter, then send an order</h3>
+    <div class="row-gap">
+      <button class="btn" id="serverToggle" onclick="toggleServer()"><span class="status-dot" id="serverDot"></span>Start server</button>
+      <button class="btn secondary" id="sendReq" onclick="sendRequest()" disabled>Send a request</button>
+    </div>
+    <div class="server-log" id="serverLog"></div>
+  </div>
+`);
+
+/* ---------------- 6. api ---------------- */
+addPanel('api', `
+  <span class="station-tag">Station 6 · The core idea</span>
+  <h2>An API</h2>
+  <p>An API is the menu. It tells you exactly what you're allowed to ask for and exactly how to phrase it — and in return, exactly what you'll get back. You don't walk into the kitchen and grab whatever; you order off the menu.</p>
+  <div class="demo">
+    <h3>Try it — order off the menu</h3>
+    <div class="menu-list">
+      <button class="menu-item" onclick="orderApi('metrics')"><span>Check current numbers</span><span class="verb">GET /metrics</span></button>
+      <button class="menu-item" onclick="orderApi('alert')"><span>Report a metric that's off</span><span class="verb">POST /airtable-alert</span></button>
+      <button class="menu-item" onclick="orderApi('health')"><span>Are you alive?</span><span class="verb">GET /health</span></button>
+    </div>
+    <pre id="apiResponse" style="margin-top:14px;">// click an item to see what comes back</pre>
+  </div>
+`);
+
+/* ---------------- 7. endpoint ---------------- */
+addPanel('endpoint', `
+  <span class="station-tag">Station 7 · The core idea</span>
+  <h2>An endpoint</h2>
+  <p>An endpoint is one specific service window — like a drive-thru that has a separate window for ordering and for picking up. Each window does exactly one job. If you need a new job, you don't cram it into an existing window, you open a new one.</p>
+  <div class="demo">
+    <h3>Three different windows, three different jobs</h3>
+    <table class="ep">
+      <tr><th>Method</th><th>Path</th><th>Job</th></tr>
+      <tr><td><code>GET</code></td><td><code>/metrics</code></td><td>Reads the current numbers</td></tr>
+      <tr><td><code>POST</code></td><td><code>/airtable-alert</code></td><td>Receives "something's off" pushes</td></tr>
+      <tr><td><code>GET</code></td><td><code>/health</code></td><td>Confirms the server is awake</td></tr>
+    </table>
+  </div>
+`);
+
+/* ---------------- 8. webhook ---------------- */
+addPanel('webhook', `
+  <span class="station-tag">Station 8 · The core idea</span>
+  <h2>A webhook</h2>
+  <p>A webhook isn't a separate technology — it's just a message they send to you, instead of you repeatedly asking "has anything changed yet?" It flips who picks up the phone.</p>
+  <div class="demo">
+    <h3>Try both — see the difference</h3>
+    <div class="compare">
+      <div class="col">
+        <h4>Polling (you ask)</h4>
+        <button class="btn secondary" onclick="pollAsk()">Ask: anything new?</button>
+        <div class="feed" id="pollFeed"></div>
+      </div>
+      <div class="col">
+        <h4>Webhook (they tell you)</h4>
+        <button class="btn" id="hookBtn" onclick="startListening()">Start listening</button>
+        <div class="feed" id="hookFeed"></div>
+      </div>
+    </div>
+  </div>
+`);
+
+/* ---------------- 9. json ---------------- */
+addPanel('json', `
+  <span class="station-tag">Station 9 · The message format</span>
+  <h2>JSON</h2>
+  <p>JSON is the order ticket — not a paragraph, just a slip with labeled blanks. Every message in this whole project, in both directions, is written this way.</p>
+  <div class="demo">
+    <h3>Build your own ticket</h3>
+    <div id="fieldRows"></div>
+    <button class="btn secondary" onclick="addField()">+ add field</button>
+    <pre id="jsonPreview" style="margin-top:14px;"></pre>
+  </div>
+`);
+
+/* ---------------- 10. env var ---------------- */
+addPanel('envvar', `
+  <span class="station-tag">Station 10 · Staying safe</span>
+  <h2>Environment variables</h2>
+  <p>An environment variable is the safe combination — never written on the order ticket itself, so a stranger glancing at the ticket can't steal it. Your program reads it at startup instead of having it typed directly into a file.</p>
+  <div class="demo">
+    <h3>Compare the two approaches</h3>
+    <div class="toggle-pair">
+      <button id="riskyBtn" class="risky" onclick="showEnv('risky')">Hardcoded (risky)</button>
+      <button id="safeBtn" class="safe" onclick="showEnv('safe')">Environment variable (safe)</button>
+    </div>
+    <pre id="envCode"></pre>
+    <div class="hint" id="envHint"></div>
+  </div>
+`);
+
+/* ---------------- 11. recap ---------------- */
+addPanel('recap', `
+  <span class="station-tag">Station 11 · Recap</span>
+  <h2>Match it to memory</h2>
+  <p>Click each card to flip it. Try saying the answer out loud before you flip — that's what actually makes it stick.</p>
+  <div class="cards-grid" id="cardsGrid"></div>
+`);
+
+showStation('welcome');
+
+/* ================= interactivity ================= */
+
+/* terminal */
+const termOutput = document.getElementById('termOutput');
+const termInput = document.getElementById('termInput');
+function termLine(text){
+  const d = document.createElement('div');
+  d.className = 'line';
+  d.textContent = text;
+  termOutput.appendChild(d);
+  termOutput.scrollTop = termOutput.scrollHeight;
+}
+termInput.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter') return;
+  const raw = termInput.value.trim();
+  if (!raw) return;
+  termLine('$ ' + raw);
+  handleCommand(raw);
+  termInput.value = '';
+});
+function handleCommand(raw){
+  const parts = raw.split(/\s+/);
+  const cmd = parts[0];
+  if (cmd === 'node' && parts[1] === '-v') termLine('v20.11.0');
+  else if (cmd === 'npm' && parts[1] === '-v') termLine('10.2.4');
+  else if (cmd === 'mkdir') termLine(parts[1] ? 'folder created: ' + parts[1] : 'usage: mkdir <folder-name>');
+  else if (cmd === 'cd') termLine(parts[1] ? 'moved into ~/' + parts[1] : 'usage: cd <folder-name>');
+  else if (cmd === 'code') termLine('opening VS Code in this folder…');
+  else if (cmd === 'clear') { termOutput.innerHTML = ''; return; }
+  else if (cmd === 'help') termLine('commands: node -v · npm -v · mkdir <name> · cd <name> · code . · clear');
+  else termLine('command not found: ' + cmd + ' — try "help"');
+}
+
+/* node runner */
+function runCode(){
+  const code = document.getElementById('codeInput').value;
+  const out = document.getElementById('codeOutput');
+  const lines = [];
+  const fakeConsole = { log: (...args) => lines.push(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')) };
+  try {
+    const fn = new Function('console', code);
+    fn(fakeConsole);
+    out.classList.remove('error');
+    out.textContent = lines.length ? lines.join('\n') : '(no output — try a console.log!)';
+  } catch (err) {
+    out.classList.add('error');
+    out.textContent = 'Error: ' + err.message;
+  }
+}
+
+/* npm */
+let installed = false;
+function installPackage(){
+  if (installed) return;
+  installed = true;
+  const pantry = document.getElementById('pantry');
+  const crate = document.createElement('div');
+  crate.className = 'crate';
+  crate.textContent = 'express';
+  pantry.appendChild(crate);
+  document.getElementById('npmHint').textContent = 'added 1 package — node_modules/express is ready to use.';
+  document.getElementById('npmBtn').textContent = '✓ installed';
+  document.getElementById('npmBtn').disabled = true;
+}
+
+/* server */
+let serverOn = false;
+function toggleServer(){
+  serverOn = !serverOn;
+  document.getElementById('serverDot').classList.toggle('on', serverOn);
+  document.getElementById('serverToggle').lastChild.textContent = serverOn ? ' Stop server' : ' Start server';
+  document.getElementById('sendReq').disabled = !serverOn;
+  const log = document.getElementById('serverLog');
+  const d = document.createElement('div');
+  d.textContent = serverOn ? '✓ listening on port 3000…' : '✕ server stopped';
+  log.appendChild(d);
+  log.scrollTop = log.scrollHeight;
+}
+function sendRequest(){
+  const log = document.getElementById('serverLog');
+  const steps = [
+    '→ POST /airtable-alert received',
+    '✓ reading request body (JSON)',
+    '→ calling Ringg AI…',
+    '← 200 OK — call placed'
+  ];
+  steps.forEach((text, i) => {
+    setTimeout(() => {
+      const d = document.createElement('div');
+      d.textContent = text;
+      log.appendChild(d);
+      log.scrollTop = log.scrollHeight;
+    }, i * 450);
+  });
+}
+
+/* api */
+function orderApi(kind){
+  const responses = {
+    metrics: '{\n  "active_calls": 12,\n  "avg_wait_sec": 4\n}',
+    alert: '{\n  "status": "received",\n  "queued_call": true\n}',
+    health: '{\n  "status": "ok"\n}'
+  };
+  document.getElementById('apiResponse').textContent = responses[kind];
+}
+
+/* webhook */
+let askCount = 0;
+function pollAsk(){
+  askCount++;
+  const feed = document.getElementById('pollFeed');
+  const d = document.createElement('div');
+  if (askCount % 4 === 0) {
+    d.className = 'hit';
+    d.textContent = 'Airtable: actually, yes — something changed!';
+    askCount = 0;
+  } else {
+    d.textContent = 'You: anything new?  →  Airtable: nope.';
+  }
+  feed.prepend(d);
+}
+let listening = false;
+function startListening(){
+  if (listening) return;
+  listening = true;
+  const btn = document.getElementById('hookBtn');
+  btn.textContent = 'Listening…';
+  btn.disabled = true;
+  const feed = document.getElementById('hookFeed');
+  const waiting = document.createElement('div');
+  waiting.textContent = 'You: nothing to do, just waiting…';
+  feed.appendChild(waiting);
+  setTimeout(() => {
+    const d = document.createElement('div');
+    d.className = 'hit';
+    d.textContent = '📨 Airtable → you: something changed!';
+    feed.appendChild(d);
+    btn.textContent = 'Start listening';
+    btn.disabled = false;
+    listening = false;
+  }, 2200);
+}
+
+/* json builder */
+let fields = [ { key: 'name', value: 'Acme Corp' }, { key: 'phone', value: '+1234567890' } ];
+function renderFields(){
+  const wrap = document.getElementById('fieldRows');
+  wrap.innerHTML = '';
+  fields.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'field-row';
+    row.innerHTML =
+      '<input data-i="' + i + '" data-k="key" placeholder="key" value="' + f.key.replace(/"/g,'&quot;') + '">' +
+      '<input data-i="' + i + '" data-k="value" placeholder="value" value="' + f.value.replace(/"/g,'&quot;') + '">' +
+      '<button data-remove="' + i + '" aria-label="remove field">×</button>';
+    wrap.appendChild(row);
+  });
+  wrap.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', (e) => {
+      const i = +e.target.dataset.i;
+      const k = e.target.dataset.k;
+      fields[i][k] = e.target.value;
+      renderJsonPreview();
+    });
+  });
+  wrap.querySelectorAll('button[data-remove]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      fields.splice(+e.target.dataset.remove, 1);
+      renderFields();
+      renderJsonPreview();
+    });
+  });
+}
+function addField(){
+  fields.push({ key: '', value: '' });
+  renderFields();
+  renderJsonPreview();
+}
+function renderJsonPreview(){
+  const obj = {};
+  fields.forEach(f => { if (f.key) obj[f.key] = f.value; });
+  document.getElementById('jsonPreview').textContent = JSON.stringify(obj, null, 2);
+}
+renderFields();
+renderJsonPreview();
+
+/* env var */
+const envSnippets = {
+  risky: '// inside your code file — anyone who sees this file sees the key\nconst apiKey = "sk_live_8f7a2c91...";\n\nfetch("https://api.ringg.ai/call", {\n  headers: { Authorization: apiKey }\n});',
+  safe: '// inside your code file — the key itself lives elsewhere\nconst apiKey = process.env.RINGG_API_KEY;\n\nfetch("https://api.ringg.ai/call", {\n  headers: { Authorization: apiKey }\n});'
+};
+function showEnv(kind){
+  document.getElementById('riskyBtn').classList.toggle('active', kind === 'risky');
+  document.getElementById('safeBtn').classList.toggle('active', kind === 'safe');
+  document.getElementById('envCode').textContent = envSnippets[kind];
+  document.getElementById('envHint').textContent = kind === 'risky'
+    ? 'Anyone with this file — a teammate, a public GitHub repo — now has your key.'
+    : 'The key lives in a separate, untracked file. The code only references its name.';
+}
+showEnv('safe');
+
+/* recap flashcards */
+const terms = [
+  { term:'Server', def:'A program that waits, then reacts — the waiter standing by.' },
+  { term:'API', def:'The agreed way to ask for something — the menu and its rules.' },
+  { term:'Endpoint', def:'One address, one job — a single service window.' },
+  { term:'Webhook', def:'They call you when something happens, instead of you asking.' },
+  { term:'JSON', def:'The labeled message format — the order ticket.' },
+  { term:'Env. variable', def:'A secret kept separate from your code — the locked safe.' },
+  { term:'Terminal', def:'A direct line to your computer — type it, it happens.' },
+  { term:'npm', def:'Downloads pre-built code so you skip starting from scratch.' },
+  { term:'Node.js', def:'The engine that runs JavaScript outside a browser.' },
+];
+const grid = document.getElementById('cardsGrid');
+terms.forEach(t => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.tabIndex = 0;
+  card.innerHTML =
+    '<div class="card-inner">' +
+      '<div class="card-face card-front">' + t.term + '</div>' +
+      '<div class="card-face card-back">' + t.def + '</div>' +
+    '</div>';
+  const flip = () => card.classList.toggle('flipped');
+  card.addEventListener('click', flip);
+  card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); } });
+  grid.appendChild(card);
+});
+</script>
+</body>
+</html>
